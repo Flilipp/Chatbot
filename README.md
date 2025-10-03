@@ -38,7 +38,7 @@ Aby uruchomić projekt na swoim komputerze, postępuj zgodnie z poniższymi krok
 
 1.  **Klonowanie Repozytorium**:
     ```bash
-    git clone [adres-twojego-repozytorium-na-gicie]
+    git clone https://github.com/Flilipp/Chatbot
     cd chatbot-projekt
     ```
 
