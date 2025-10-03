@@ -4,28 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="106a4689-9307-4372-874c-78153a3e0f32" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Backend/api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/components.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/eslint.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/postcss.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/NotFound.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tailwind.config.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.app.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.node.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/PythonProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PythonProject.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="106a4689-9307-4372-874c-78153a3e0f32" name="Changes" comment="Dodano frontend i backend + APi">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chatbot_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/chatbot_app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,8 +109,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1759522198382</updated>
-      <workItem from="1759522207793" duration="4314000" />
+      <workItem from="1759522207793" duration="6319000" />
     </task>
+    <task id="LOCAL-00001" summary="Dodano frontend i backend + APi">
+      <option name="closed" value="true" />
+      <created>1759529823564</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1759529823564</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -143,6 +135,11 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit" />
+    <MESSAGE value="Dodano frontend i backend + APi" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dodano frontend i backend + APi" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PythonProject$chatbot_app.coverage" NAME="chatbot_app Coverage Results" MODIFIED="1759527478895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
