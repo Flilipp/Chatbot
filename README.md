@@ -2,6 +2,7 @@
 
 Jest to w pełni funkcjonalna aplikacja typu "full-stack", która pozwala na prowadzenie rozmów z lokalnym modelem językowym (AI) za pośrednictwem nowoczesnego interfejsu webowego. Backend aplikacji został zbudowany w Pythonie przy użyciu FastAPI, a frontend w React (TypeScript) i Tailwind CSS.
 
+
 ---
 
 ## Główne Funkcje
@@ -12,7 +13,7 @@ Jest to w pełni funkcjonalna aplikacja typu "full-stack", która pozwala na pro
 *   ⚙️ **Własny "System Prompt"**: Możliwość zdefiniowania "osobowości" lub roli bota dla każdej konwersacji.
 *   💻 **Obsługa Markdown i Kodu**: Odpowiedzi bota formatują się, a bloki kodu mają podświetlaną składnię.
 *   📋 **Przycisk Kopiuj**: Łatwe kopiowanie odpowiedzi bota jednym kliknięciem.
-*   📊 **Monitor Zasobów**: Panel boczny na żywo pokazuje zużycie CPU, RAM i VRAM, pozwalając obserwować obciążenie komputera.
+*   📊 **Monitor Zasobów**: Panel boczny na żywo pokazuje zużycie CPU, RAM i VRAM.
 
 ---
 
@@ -26,7 +27,7 @@ Jest to w pełni funkcjonalna aplikacja typu "full-stack", która pozwala na pro
 
 ## Instalacja i Uruchomienie (Lokalne)
 
-Aby uruchomić projekt na swoim komputerze, postępuj zgodnie z poniższymi krokami.
+Procedura do wykonania **tylko za pierwszym razem**.
 
 ### Wymagania Wstępne
 
@@ -34,7 +35,7 @@ Aby uruchomić projekt na swoim komputerze, postępuj zgodnie z poniższymi krok
 2.  **Python**: [Pobierz i zainstaluj](https://www.python.org/downloads/) (wersja 3.10+).
 3.  **Ollama**: Postępuj zgodnie z instrukcją instalacji na [ollama.com](https://ollama.com/).
 
-### Kroki Uruchomienia
+### Kroki Instalacji
 
 1.  **Klonowanie Repozytorium**:
     ```bash
@@ -47,7 +48,7 @@ Aby uruchomić projekt na swoim komputerze, postępuj zgodnie z poniższymi krok
     ollama pull llama3
     ```
 
-3.  **Uruchomienie Backendu (Terminal 1)**:
+3.  **Instalacja Backendu (Terminal 1)**:
     ```bash
     cd backend
     python -m venv venv
@@ -56,16 +57,54 @@ Aby uruchomić projekt na swoim komputerze, postępuj zgodnie z poniższymi krok
     # macOS/Linux
     # source venv/bin/activate
     pip install -r requirements.txt
-    uvicorn api:app --reload
     ```
-    *Backend będzie działał na `http://127.0.0.1:8000`.*
 
-4.  **Uruchomienie Frontendu (Terminal 2)**:
+4.  **Instalacja Frontendu (Terminal 2)**:
     ```bash
     cd frontend
     npm install
-    npm run dev
     ```
-    *Frontend będzie dostępny w przeglądarce pod adresem `http://localhost:8080/`.*
 
 ---
+
+## Jak Uruchomić Aplikację Ponownie
+
+To jest procedura, której będziesz używać na co dzień.
+
+### Krok 1: Upewnij się, że Ollama działa
+
+Ollama powinna uruchamiać się automatycznie w tle po starcie systemu. Jeśli nie, uruchom ją ręcznie.
+
+### Krok 2: Uruchom Backend
+
+1.  Otwórz **pierwszy terminal** i przejdź do folderu projektu.
+2.  Wejdź do folderu `backend` i aktywuj środowisko wirtualne:
+    ```bash
+    cd backend
+    # Windows
+    venv\Scripts\activate
+    # macOS/Linux
+    # source venv/bin/activate
+    ```
+3.  Uruchom serwer:
+    ```bash
+    uvicorn api:app
+    ```
+    *Backend będzie działał na `http://127.0.0.1:8000`. Zostaw ten terminal otwarty.*
+
+### Krok 3: Uruchom Frontend
+
+1.  Otwórz **drugi, osobny terminal** i przejdź do folderu projektu.
+2.  Wejdź do folderu `frontend`:
+    ```bash
+    cd frontend
+    ```
+3.  Uruchom serwer deweloperski:
+    ```bash
+    npm run dev
+    ```
+    *Frontend będzie dostępny w przeglądarce pod adresem `http://localhost:8080/`. Zostaw ten terminal otwarty.*
+
+### Gotowe!
+
+Otwórz przeglądarkę i wejdź na adres **`http://localhost:8080/`**.
