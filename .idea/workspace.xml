@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="106a4689-9307-4372-874c-78153a3e0f32" name="Changes" comment="Dodano TTL,Wyszukiwarke www(tochemid)">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Navigation.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Auth.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/ImageGenerator.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/VoiceChat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+    <list default="true" id="106a4689-9307-4372-874c-78153a3e0f32" name="Changes" comment="Nowy frontend i backend support pod voice i pod image genretor">
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/TestPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/NotFound.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/NotFound.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +98,7 @@
       <workItem from="1759533082512" duration="1529000" />
       <workItem from="1759582974739" duration="444000" />
       <workItem from="1759583446609" duration="5317000" />
-      <workItem from="1759589861145" duration="1608000" />
+      <workItem from="1759589861145" duration="4509000" />
     </task>
     <task id="LOCAL-00001" summary="Dodano frontend i backend + APi">
       <option name="closed" value="true" />
@@ -130,7 +124,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759585701931</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Nowy frontend i backend support pod voice i pod image genretor">
+      <option name="closed" value="true" />
+      <created>1759591842296</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1759591842296</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -152,7 +154,8 @@
     <MESSAGE value="Dodano frontend i backend + APi" />
     <MESSAGE value="Dodano troche QOL Changes" />
     <MESSAGE value="Dodano TTL,Wyszukiwarke www(tochemid)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dodano TTL,Wyszukiwarke www(tochemid)" />
+    <MESSAGE value="Nowy frontend i backend support pod voice i pod image genretor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Nowy frontend i backend support pod voice i pod image genretor" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PythonProject$chatbot_app.coverage" NAME="chatbot_app Coverage Results" MODIFIED="1759527478895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
