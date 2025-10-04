@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Send, Bot, Cpu, HardDrive, Zap, Trash2, Copy, Settings } from "lucide-react";
+import { Plus, Send, Bot, Cpu, HardDrive, Zap, Trash2, Copy, Settings, Mic, Square, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -20,21 +20,15 @@ interface SystemStats {
   vram: number | string;
 }
 
-// --- Komponent do podświetlania kodu ---
 const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
   const match = /language-(\w+)/.exec(className || '');
   return !inline && match ? (
     <SyntaxHighlighter style={vscDarkPlus} language={match[1]} PreTag="div" {...props}>
       {String(children).replace(/\n$/, '')}
     </SyntaxHighlighter>
-  ) : (
-    <code className={className} {...props}>
-      {children}
-    </code>
-  );
+  ) : ( <code className={className} {...props}> {children} </code> );
 };
 
-// --- Główny komponent aplikacji ---
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -43,20 +37,27 @@ const Index = () => {
   const [systemStats, setSystemStats] = useState<SystemStats>({ cpu: 0, ram: 0, vram: "N/A" });
   const [systemPrompt, setSystemPrompt] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTtsEnabled, setIsTtsEnabled] = useState(true);
 
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const audioPlayerRef = useRef<HTMLAudioElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const fetchConversations = async () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/conversations");
+      if (!response.ok) return;
       const data: Conversation[] = await response.json();
       setConversations(data);
-    } catch (error) { console.error("Błąd podczas wczytywania listy konwersacji:", error); }
+    } catch (error) { console.error("Błąd wczytywania konwersacji:", error); }
   };
 
   const fetchStats = async () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/stats");
+      if (!response.ok) return;
       const data = await response.json();
       setSystemStats(data);
     } catch (error) { console.error("Błąd pobierania statystyk:", error); }
@@ -70,9 +71,9 @@ const Index = () => {
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-    const userMessage: Message = { id: Date.now().toString(), role: "user", content: inputValue };
+  const handleSendMessage = async (text: string) => {
+    if (!text.trim()) return;
+    const userMessage: Message = { id: Date.now().toString(), role: "user", content: text };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInputValue("");
@@ -94,26 +95,36 @@ const Index = () => {
         const chunk = decoder.decode(value, { stream: true });
         const jsonChunks = chunk.split('\n').filter(Boolean);
         for (const jsonChunk of jsonChunks) {
-          const parsed = JSON.parse(jsonChunk);
-          if (parsed.message?.content) {
-            fullResponse += parsed.message.content;
-            setMessages((prev) => prev.map((msg) => msg.id === botMessageId ? { ...msg, content: fullResponse } : msg));
-          }
+          try {
+            const parsed = JSON.parse(jsonChunk);
+            if (parsed.status === 'searching') {
+              setMessages((prev) => prev.map((msg) => msg.id === botMessageId ? { ...msg, content: `🔎 Wyszukiwanie: "${parsed.query}"...` } : msg));
+              fullResponse = "";
+            } else if (parsed.message?.content) {
+              fullResponse += parsed.message.content;
+              setMessages((prev) => prev.map((msg) => msg.id === botMessageId ? { ...msg, content: fullResponse } : msg));
+            }
+          } catch(e) { console.error("Błąd parsowania JSON:", e)}
         }
       }
     } catch (error) {
       console.error("Błąd połączenia z API:", error);
       setMessages((prev) => prev.map((msg) => msg.id === botMessageId ? { ...msg, content: "Błąd połączenia z serwerem." } : msg));
     } finally {
-      finalMessages.push({ id: botMessageId, role: "assistant", content: fullResponse });
-      const currentConvId = activeConversationId || "new";
-      const response = await fetch("http://127.0.0.1:8000/api/conversations", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: currentConvId, messages: finalMessages.map(({ id, ...rest }) => rest), system_prompt: systemPrompt }),
-      });
-      const data = await response.json();
-      if(currentConvId === "new"){ setActiveConversationId(data.conversation_id); }
-      fetchConversations();
+      if(fullResponse.trim()){
+        finalMessages.push({ id: botMessageId, role: "assistant", content: fullResponse });
+        const currentConvId = activeConversationId || "new";
+        const saveResponse = await fetch("http://127.0.0.1:8000/api/conversations", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: currentConvId, messages: finalMessages.map(({ id, ...rest }) => rest), system_prompt: systemPrompt }),
+        });
+        const data = await saveResponse.json();
+        if(currentConvId === "new"){ setActiveConversationId(data.conversation_id); }
+        fetchConversations();
+        if (isTtsEnabled) {
+            handleSynthesizeAndPlay(fullResponse);
+        }
+      }
     }
   };
 
@@ -130,17 +141,72 @@ const Index = () => {
 
   const handleDeleteConversation = async (conversationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm("Czy na pewno chcesz usunąć tę rozmowę?")) return;
+    if (!window.confirm("Na pewno usunąć?")) return;
     try {
       await fetch(`http://127.0.0.1:8000/api/conversations/${conversationId}`, { method: 'DELETE' });
       if (activeConversationId === conversationId) { handleNewChat(); }
       fetchConversations();
-    } catch (error) { console.error("Błąd podczas usuwania konwersacji:", error); }
+    } catch (error) { console.error("Błąd usuwania konwersacji:", error); }
   };
 
   const handleNewChat = () => { setActiveConversationId("new"); setMessages([]); setSystemPrompt(""); };
-  const handleKeyPress = (e: React.KeyboardEvent) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } };
   const handleCopy = (text: string) => { navigator.clipboard.writeText(text); };
+
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+    } else {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+          mediaRecorderRef.current = mediaRecorder;
+          audioChunksRef.current = [];
+
+          mediaRecorder.ondataavailable = (event) => audioChunksRef.current.push(event.data);
+
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const formData = new FormData();
+            formData.append("audio_file", audioBlob, "recording.webm");
+
+            try {
+              setIsRecording(false);
+              const response = await fetch("http://127.0.0.1:8000/api/transcribe", { method: "POST", body: formData });
+              const data = await response.json();
+              if (data.transcription) {
+                await handleSendMessage(data.transcription);
+              }
+            } catch (error) { console.error("Błąd transkrypcji:", error); }
+
+            stream.getTracks().forEach(track => track.stop());
+          };
+
+          mediaRecorder.start();
+          setIsRecording(true);
+        })
+        .catch(err => alert("Błąd dostępu do mikrofonu. Sprawdź uprawnienia w przeglądarce."));
+    }
+  };
+
+  const handleSynthesizeAndPlay = async (text: string) => {
+    if (!text.trim()) return;
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/synthesize", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!response.ok) return;
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      if(audioPlayerRef.current) {
+        audioPlayerRef.current.src = audioUrl;
+        audioPlayerRef.current.play();
+      }
+    } catch (error) { console.error("Błąd syntezy mowy:", error); }
+  };
+
+  const handleTextSubmit = () => handleSendMessage(inputValue);
+  const handleKeyPress = (e: React.KeyboardEvent) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleTextSubmit(); } };
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[hsl(var(--chat-bg))] text-[hsl(var(--foreground))]">
@@ -177,7 +243,7 @@ const Index = () => {
           <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
             <div className="w-16 h-16 mb-4 flex items-center justify-center rounded-2xl bg-[hsl(var(--primary))]"><Bot className="w-8 h-8 text-[hsl(var(--primary-foreground))]" /></div>
             <h2 className="text-2xl font-bold">Lokalny Asystent AI</h2>
-            <p className="text-muted-foreground max-w-sm mt-2">Zacznij rozmowę wpisując wiadomość poniżej lub wybierz konwersację z historii.</p>
+            <p className="text-muted-foreground max-w-sm mt-2">Zacznij rozmowę wpisując wiadomość lub użyj mikrofonu.</p>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto scrollbar-thin p-6 space-y-6">
@@ -186,7 +252,7 @@ const Index = () => {
                 {message.role === "assistant" && <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-[hsl(var(--primary))]"><Bot className="w-5 h-5 text-[hsl(var(--primary-foreground))]" /></div>}
                 <div className={`relative max-w-[70%] px-4 py-3 rounded-2xl ${message.role === "user" ? "rounded-tr-sm bg-[hsl(var(--user-message))] text-[hsl(var(--user-message-text))]" : "rounded-tl-sm bg-[hsl(var(--bot-message))] text-[hsl(var(--bot-message-text))]"}`}>
                   <ReactMarkdown components={{ code: CodeBlock }}>{message.content}</ReactMarkdown>
-                  {message.role === 'assistant' && message.content && (
+                  {message.role === 'assistant' && message.content && !message.content.startsWith("🔎") && (
                     <button onClick={() => handleCopy(message.content)} className="absolute top-1 right-1 p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:bg-white/10"><Copy className="w-3 h-3" /></button>
                   )}
                 </div>
@@ -197,10 +263,15 @@ const Index = () => {
         )}
         <div className="border-t border-border p-4">
             <div className="max-w-4xl mx-auto flex gap-3 items-end">
-                <textarea value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyPress={handleKeyPress} placeholder="Napisz swoją wiadomość..." rows={1} className="flex-1 w-full px-4 py-3 rounded-xl resize-none focus:outline-none focus:ring-2 transition-all text-sm bg-[hsl(var(--input))] border border-[hsl(var(--border))] focus:border-[hsl(var(--ring))]" />
-                <button onClick={handleSendMessage} disabled={!inputValue.trim()} className="flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"><Send className="w-5 h-5" /></button>
+                <textarea value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyPress={handleKeyPress} placeholder="Napisz wiadomość lub użyj mikrofonu..." rows={1} className="flex-1 w-full px-4 py-3 rounded-xl resize-none focus:outline-none focus:ring-2 transition-all text-sm bg-[hsl(var(--input))] border border-[hsl(var(--border))] focus:border-[hsl(var(--ring))]" />
+                <button onClick={handleTextSubmit} disabled={!inputValue.trim()} className="flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]"><Send className="w-5 h-5" /></button>
+                <button onClick={handleToggleRecording} className={`flex items-center justify-center p-3 rounded-xl transition-all ${isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]'}`}>{isRecording ? <Square className="w-5 h-5" /> : <Mic className="w-5 h-5" />}</button>
+                <button onClick={() => setIsTtsEnabled(!isTtsEnabled)} title={isTtsEnabled ? "Wyłącz syntezę mowy" : "Włącz syntezę mowy"} className="flex items-center justify-center p-3 rounded-xl transition-all bg-gray-700 hover:bg-gray-600 text-white">
+                  {isTtsEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                </button>
             </div>
         </div>
+        <audio ref={audioPlayerRef} style={{ display: 'none' }} />
       </main>
     </div>
   );
